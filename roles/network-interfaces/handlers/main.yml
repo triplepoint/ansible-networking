@@ -1,4 +1,4 @@
 ---
 - name: restart networking
   shell: "ip addr flush {{ item.interface }} && systemctl restart networking.service"
-  with_items: {{ network_interfaces }}
+  with_items: "{{ network_interfaces }}"
