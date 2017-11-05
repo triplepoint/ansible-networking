@@ -1,17 +1,13 @@
-# NOTES:
-# '{{ gateway_routing_and_nat_wan_interface }}' is our WAN link
-# '{{ gateway_routing_and_nat_lan_interface }}' is our LAN link
-
 *nat
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
-# NAT rewrite traffic out to the WAN
+## NAT rewrite traffic out to the WAN
 -A POSTROUTING -o {{ gateway_routing_and_nat_wan_interface }} -j MASQUERADE
 
-# NAT port forwarding exceptions, if any (see associated FORWARD rules below)
+## NAT port forwarding exceptions, if any (see associated FORWARD rules below)
 {% for forwarding in gateway_routing_and_nat_port_forwarding %}
 {% for protocol in forwarding.protocol %}
 -A PREROUTING -p {{ protocol }} -m {{ protocol }} -i {{ gateway_routing_and_nat_wan_interface }} --dport {{ forwarding.port }} -j DNAT --to-destination {{ forwarding.address }}:{{ forwarding.port }}
@@ -26,64 +22,47 @@ COMMIT
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 
-# services
-# basic global accept rules - ICMP, loopback, established all accepted
+## Gateway Services
+### basic global accept rules - ICMP, loopback, established all accepted
 -A INPUT -s 127.0.0.0/8 -d 127.0.0.0/8 -i lo -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -m state --state ESTABLISHED -j ACCEPT
 
-# enable traceroute rejections to get sent out
+### enable traceroute rejections to get sent out
 -A INPUT -p udp -m udp --dport 33434:33523 -j REJECT --reject-with icmp-port-unreachable
 
-## LAN
-# DNS - accept from LAN
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p tcp --dport 53 -j ACCEPT
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p udp --dport 53 -j ACCEPT
+### Subnet Rules
+{% for subnet in gateway_routing_and_nat_subnets %}
+#### {{ subnet.comment }}
+{% for input in subnet.allowed_inputs %}
+-A INPUT -i {{ subnet.interface }} -p {{ input.protocol }} --dport {{ input.port }} -j ACCEPT
+{% endfor %}
 
-# DHCP client requests - accept from LAN
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p udp --dport 67:68 -j ACCEPT
+{% endfor %}
 
-# SSH - accept from LAN
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p tcp --dport 22 -j ACCEPT
-
-# Iperf3 - accept from LAN
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p tcp --dport 5201 -j ACCEPT
-
-# NTP - accept from LAN
--A INPUT -i {{ gateway_routing_and_nat_lan_interface }} -p udp --dport 123 -j ACCEPT
-
-## Guest
-# DNS - accept from Guest
--A INPUT -i {{ gateway_routing_and_nat_guest_interface }} -p tcp --dport 53 -j ACCEPT
--A INPUT -i {{ gateway_routing_and_nat_guest_interface }} -p udp --dport 53 -j ACCEPT
-
-# DHCP client requests - accept from Guest
--A INPUT -i {{ gateway_routing_and_nat_guest_interface }} -p udp --dport 67:68 -j ACCEPT
-
-# drop all other inbound traffic
+### drop all other inbound traffic
 -A INPUT -j DROP
 
 
-# forwarding
-# forward packets along established/related connections
+## Traffic Forwarding
+### forward packets along established/related connections
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-# allow traffic from our NAT pinholes, if any (see associated NAT rules above)
+### allow traffic from our NAT pinholes, if any (see associated NAT rules above)
 {% for forwarding in gateway_routing_and_nat_port_forwarding %}
 {% for protocol in forwarding.protocol %}
 -A FORWARD -p {{ protocol }} -d {{ forwarding.address }} --dport {{ forwarding.port }} -j ACCEPT
 {% endfor %}
 {% endfor %}
 
-## LAN
-# forward from LAN to WAN (all outbound traffic is accepted)
--A FORWARD -i {{ gateway_routing_and_nat_lan_interface }} -o {{ gateway_routing_and_nat_wan_interface }} -j ACCEPT
+### Subnet rules
+{% for subnet in gateway_routing_and_nat_subnets %}
+#### {{ subnet.comment }}
+-A FORWARD -i {{ subnet.interface }} -o {{ gateway_routing_and_nat_wan_interface }} -j ACCEPT
 
-## Guest
-# forward from Guest to WAN (all outbound traffic is accepted)
--A FORWARD -i {{ gateway_routing_and_nat_guest_interface }} -o {{ gateway_routing_and_nat_wan_interface }} -j ACCEPT
+{% endfor %}
 
-# drop all other forwarded traffic
+### drop all other forwarded traffic
 -A FORWARD -j DROP
 
 COMMIT
