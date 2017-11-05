@@ -1,0 +1,15 @@
+---
+# The network interface name for the WAN side of the router
+gateway_routing_and_nat_wan_interface: "eth0"
+
+# The network interface name for the LAN network behind the router
+gateway_routing_and_nat_lan_interface: "eth1"
+
+# The network interface name for the GUEST network behind the router
+gateway_routing_and_nat_guest_interface: "eth2"
+
+# Items in this list represent port-forwarding targets, such that traffic from
+# the outside world onto the given port will always be routed to the target
+# address.
+gateway_routing_and_nat_port_forwarding: []
+  # - { address: "192.168.1.50", port: "80", protocol: [tcp] } # protocol is a list
