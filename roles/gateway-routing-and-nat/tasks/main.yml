@@ -10,8 +10,8 @@
 
 - name: Ensure the ipv4 iptables configuration file is in place
   template: src=iptables_v4_config.j2 dest=/etc/iptables/rules.v4 mode=0744
-  notify: restart networking
+  notify: reload ipv4 iptables
 
 # - name: Ensure the ipv6 iptables configuration file is in place
 #   template: src=iptables_v6_config.j2 dest=/etc/iptables/rules.v6 mode=0744
-#   notify: restart networking
+#   notify: reload ipv6 iptables
