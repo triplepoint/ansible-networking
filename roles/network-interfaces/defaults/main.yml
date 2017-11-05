@@ -1,0 +1,18 @@
+---
+# Network interface definitions, such that they'll appear
+# in /etc/network/interfaces
+network_interfaces: []
+  # - { comment: "WAN",             # Comment header which will be inserted into the /etc/network/interfaces file
+  #     interface: eth0,            # The interface name
+  #     configuration: dhcp         # How the interface is configured - `manual`, `dhcp`, `static`, etc
+                                    # Additional allowed fields include `address`, `netmask`,
+                                    #   `gateway`, `network`, `broadcast`, and `vlan_device`
+  #   }
+  # - { comment: "LAN",
+  #     interface: eth1,
+  #     configuration: static,
+  #     address: "192.168.0.1",
+  #     netmask: "255.255.255.0",
+  #     network: "192.168.0.0",
+  #     broadcast: "192.168.0.255"
+  #   }

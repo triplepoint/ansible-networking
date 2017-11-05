@@ -1,0 +1,27 @@
+# The loopback network interface
+auto lo
+iface lo inet loopback
+{% for interface in network_interfaces %}
+
+# {{ interface.comment }}
+auto {{ interface.interface }}
+iface {{ interface.interface }} inet {{ interface.configuration }}
+{% if interface.address is defined %}
+  address {{ interface.address }}
+{% endif %}
+{% if interface.netmask is defined %}
+  netmask {{ interface.netmask }}
+{% endif %}
+{% if interface.gateway is defined %}
+  gateway {{ interface.gateway }}
+{% endif %}
+{% if interface.network is defined %}
+  network {{ interface.network }}
+{% endif %}
+{% if interface.broadcast is defined %}
+  broadcast {{ interface.broadcast }}
+{% endif %}
+{% if interface.vlan_device is defined %}
+  vlan-raw-device {{ interface.vlan_device }}
+{% endif %}
+{% endfor %}

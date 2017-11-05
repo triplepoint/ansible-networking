@@ -1,0 +1,16 @@
+---
+- name: Ensure VLAN is present
+  apt: name=vlan state=present
+  notify: restart networking
+
+- name: Ensure 8021q kernel module is loaded
+  modprobe: name=8021q state=present
+  notify: restart networking
+
+- name: Ensure 8021q kernel module is always loaded on boot
+  lineinfile: path=/etc/modules line="8021q"
+  notify: restart networking
+
+- name: Ensure the network interfaces are configured
+  template: src=network_interfaces.j2 dest=/etc/network/interfaces
+  notify: restart networking
