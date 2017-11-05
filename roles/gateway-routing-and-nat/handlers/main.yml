@@ -1,6 +1,6 @@
 ---
 - name: reload ipv4 iptables
-  command: "iptables-restore < /etc/iptables/rules.v4"
+  shell: "iptables-restore < /etc/iptables/rules.v4"
 
 # - name: reload ipv6 iptables
-#   command: "iptables-restore < /etc/iptables/rules.v6"
+#   shell: "iptables-restore < /etc/iptables/rules.v6"
