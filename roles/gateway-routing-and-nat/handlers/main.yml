@@ -1,6 +1,4 @@
 ---
-- name: reload sysctl
-  command: "/sbin/sysctl -p"
 
 - name: restart networking
   service: name=networking state=restarted

@@ -1,19 +1,9 @@
 ---
 - name: Ensure that ipv4 forwarding is enabled
-  lineinfile:
-      path: /etc/sysctl.conf
-      regexp: '^net.ipv4.ip_forward='
-      insertafter: '^#net.ipv4.ip_forward='
-      line: "net.ipv4.ip_forward=1"
-  notify: reload sysctl
+  sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
 
 # - name: Ensure that ipv6 forwarding is enabled
-#   lineinfile:
-#       path: /etc/sysctl.conf
-#       regexp: '^net.ipv6.conf.all.forwarding='
-#       insertafter: '^#net.ipv6.conf.all.forwarding='
-#       line: "net.ipv6.conf.all.forwarding=1"
-#   notify: reload sysctl
+#   sysctl: name="net.ipv6.conf.all.forwarding" value=1 sysctl_set=yes state=present reload=yes
 
 - name: Ensure iptables-persistent is installed
   apt: name=iptables-persistent state=present
