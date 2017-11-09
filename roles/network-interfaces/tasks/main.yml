@@ -14,3 +14,17 @@
 - name: Ensure the network interfaces are configured
   template: src=network_interfaces.j2 dest=/etc/network/interfaces
   notify: restart networking
+
+- name: Ensure the transmit queue length is permanently set on reboot, for each interface
+  lineinfile:
+    path: /etc/rc.local
+    line: "/sbin/ifconfig {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
+    regexp: "^/sbin/ifconfig {{ item.interface }} txqueuelen"
+    insertbefore: "^exit 0"
+  with_items: "{{ network_interfaces }}"
+  register: _txqueuelen_set
+
+- name: Ensure the transmit queue length is set higher, for each interface
+  command: "ifconfig {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
+  with_items: "{{ network_interfaces }}"
+  when: _txqueuelen_set.changed

@@ -16,3 +16,8 @@ network_interfaces: []
   #     network: "192.168.0.0",
   #     broadcast: "192.168.0.255"
   #   }
+
+# Count, in frames, for the size of the transmit queue lengths.  This value
+# will be set on all interface defined in network_interfaces.
+# 1000 was the default value on a stock Ubuntu Xenial install.
+network_interfaces_txqueue_length: 1000
