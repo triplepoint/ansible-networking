@@ -16,6 +16,8 @@ gateway_routing_and_nat_wan_interface: "eth0"
 #       { protocol: udp, port: 53 },
 #       # DHCP client requests
 #       { protocol: udp, port: "67:68" },
+#       # SSH
+#       { protocol: tcp, port: 22 },
 #     ]
 #   }
 gateway_routing_and_nat_subnets:
