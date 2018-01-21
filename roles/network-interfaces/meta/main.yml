@@ -9,5 +9,5 @@ galaxy_info:
       versions:
         - xenial
   galaxy_tags:
-    - network interfaces
+    - network_interfaces
 dependencies: []
