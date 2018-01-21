@@ -1,6 +1,6 @@
 ---
 - name: Ensure VLAN is present
-  apt: name=vlan state=present
+  package: name=vlan state=present
   notify: restart networking
 
 - name: Ensure 8021q kernel module is loaded
