@@ -6,7 +6,7 @@
 #   sysctl: name="net.ipv6.conf.all.forwarding" value=1 sysctl_set=yes state=present reload=yes
 
 - name: Ensure iptables-persistent is installed
-  apt: name=iptables-persistent state=present
+  package: name=iptables-persistent state=present
 
 - name: Ensure the ipv4 iptables configuration file is in place
   template: src=iptables_v4_config.j2 dest=/etc/iptables/rules.v4 mode=0744
