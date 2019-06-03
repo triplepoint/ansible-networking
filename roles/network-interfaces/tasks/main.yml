@@ -15,16 +15,19 @@
   template: src=network_interfaces.j2 dest=/etc/network/interfaces
   notify: restart networking
 
+- name: Remove any old ifconfig commands that might be present (from an earlier version of this role)
+  lineinfile:
+    path: /etc/rc.local
+    state: absent
+    regexp: "^/sbin/ifconfig {{ item.interface }} txqueuelen"
+  with_items: "{{ network_interfaces }}"
+  notify: set interface txqueuelens
+
 - name: Ensure the transmit queue length is permanently set on reboot, for each interface
   lineinfile:
     path: /etc/rc.local
-    line: "/sbin/ifconfig {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
-    regexp: "^/sbin/ifconfig {{ item.interface }} txqueuelen"
+    line: "/sbin/ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
+    regexp: "^/sbin/ip link set {{ item.interface }} txqueuelen"
     insertbefore: "^exit 0"
   with_items: "{{ network_interfaces }}"
-  register: _txqueuelen_set
-
-- name: Ensure the transmit queue length is set higher, for each interface
-  command: "ifconfig {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
-  with_items: "{{ network_interfaces }}"
-  when: _txqueuelen_set.changed
+  notify: set interface txqueuelens
