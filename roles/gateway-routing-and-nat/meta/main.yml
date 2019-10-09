@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: gateway_routing_and_nat
   author: Jonathan Hanson
   description: Configuring `iptables` for gateway routing and NAT
   license: MIT
