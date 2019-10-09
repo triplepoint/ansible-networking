@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: network_interfaces
   author: Jonathan Hanson
   description: A role for configuring the network interfaces on a physical machine.
   license: MIT
