@@ -1,27 +1,27 @@
 ---
-- name: Ensure VLAN is present
-  package: name=vlan state=present
+- name: Ensure VLAN package is present
+  package:
+    name: vlan
+    state: present
   notify: restart networking
 
-- name: Ensure 8021q kernel module is loaded
-  modprobe: name=8021q state=present
+- name: Ensure 802.1q kernel module is loaded
+  modprobe:
+    name: 8021q
+    state: present
   notify: restart networking
 
-- name: Ensure 8021q kernel module is always loaded on boot
-  lineinfile: path=/etc/modules line="8021q"
+- name: Ensure 802.1q kernel module is always loaded on boot
+  lineinfile:
+    path: /etc/modules
+    line: "8021q"
   notify: restart networking
 
 - name: Ensure the network interfaces are configured
-  template: src=network_interfaces.j2 dest=/etc/network/interfaces
+  template:
+    src: network_interfaces.j2
+    dest: /etc/network/interfaces
   notify: restart networking
-
-- name: Remove any old ifconfig commands that might be present (from an earlier version of this role)
-  lineinfile:
-    path: /etc/rc.local
-    state: absent
-    regexp: "^/sbin/ifconfig {{ item.interface }} txqueuelen"
-  with_items: "{{ network_interfaces }}"
-  notify: set interface txqueuelens
 
 - name: Ensure the transmit queue length is permanently set on reboot, for each interface
   lineinfile:
