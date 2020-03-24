@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include ansible-gateway-routing-and-nat"
+      include_role:
+        name: "ansible-gateway-routing-and-nat"
