@@ -1,17 +1,35 @@
 ---
 - name: Ensure that ipv4 forwarding is enabled
-  sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+  sysctl:
+    name: "net.ipv4.ip_forward"
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
 
 # - name: Ensure that ipv6 forwarding is enabled
-#   sysctl: name="net.ipv6.conf.all.forwarding" value=1 sysctl_set=yes state=present reload=yes
+#   sysctl:
+#     name: "net.ipv6.conf.all.forwarding"
+#     value: "1"
+#     sysctl_set: yes
+#     state: present
+#     reload: yes
 
 - name: Ensure iptables-persistent is installed
-  package: name=iptables-persistent state=present
+  package:
+    name: iptables-persistent
+    state: present
 
 - name: Ensure the ipv4 iptables configuration file is in place
-  template: src=iptables_v4_config.j2 dest=/etc/iptables/rules.v4 mode=0744
+  template:
+    src: iptables_v4_config.j2
+    dest: /etc/iptables/rules.v4
+    mode: 0744
   notify: reload ipv4 iptables
 
 # - name: Ensure the ipv6 iptables configuration file is in place
-#   template: src=iptables_v6_config.j2 dest=/etc/iptables/rules.v6 mode=0744
+#   template:
+#     src: iptables_v6_config.j2
+#     dest: /etc/iptables/rules.v6
+#     mode: 0744
 #   notify: reload ipv6 iptables
