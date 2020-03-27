@@ -1,4 +1,4 @@
-# Intro [![Build Status](https://travis-ci.org/triplepoint/ansible-network-interfaces.svg?branch=master)](https://travis-ci.org/triplepoint/ansible-network-interfaces)
+# Intro [![Build Status](https://www.travis-ci.com/triplepoint/ansible-network-interfaces.svg?branch=master)](https://www.travis-ci.com/triplepoint/ansible-network-interfaces)
 Configure the network interfaces on the host.  This more or less amounts to
 configuring the contents of `/etc/network/interfaces`
 
