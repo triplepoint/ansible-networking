@@ -1,0 +1,23 @@
+---
+- name: Stat Wireguard private key
+  stat:
+    path: "{{ wireguard_path }}/privatekey"
+  register: _wg_privatekey
+  changed_when: false
+
+- name: Generate Wireguard public and private keys, if they do not yet exist
+  shell: "umask 077; wg genkey | tee {{ wireguard_path }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
+  when: not _wg_privatekey.stat.exists
+  notify: restart wireguard
+
+- name: Read private key
+  slurp:
+    src: "{{ wireguard_path }}/privatekey"
+  register: wireguard_server_private_key
+  changed_when: false
+
+- name: Read public key
+  slurp:
+    src: "{{ wireguard_path }}/publickey"
+  register: wireguard_server_public_key
+  changed_when: false

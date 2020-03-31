@@ -1,0 +1,12 @@
+---
+# See: https://www.wireguard.com/install/
+
+- name: Ensure the Wireguard PPA is available, for older Ubuntus
+  apt_repository:
+    repo: ppa:wireguard/wireguard
+  when: ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] is version('19.04', '<=')
+
+- name: Ensure Wireguard is installed
+  package:
+    name: wireguard
+    state: present
