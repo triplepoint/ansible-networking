@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: wireguard
+  author: Jonathan Hanson
+  description: The Wireguard VPN server
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+  galaxy_tags:
+    - vpn
+    - wireguard
+dependencies: []
