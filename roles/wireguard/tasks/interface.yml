@@ -1,0 +1,45 @@
+---
+###
+# This task set is imported under a loop, where the `item` variable is an element
+# of the `wireguard_interfaces` list variable.
+###
+
+- name: Write the key pair to files, if they're defined
+  when: item.public_key is defined and item.private_key is defined
+  block:
+  - name: Write the public key to a key file, if keys are defined
+    copy:
+      content: "{{ item.public_key }}"
+      dest: "{{ wireguard_path }}/{{ item.name }}_publickey"
+    notify: restart wireguard
+
+  - name: Write the private key to a key file, if keys are defined
+    copy:
+      content: "{{ item.private_key }}"
+      dest: "{{ wireguard_path }}/{{ item.name }}_privatekey"
+    notify: restart wireguard
+    no_log: true
+
+- name: Generate public and private keys for this Wireguard interface, if they do not yet exist
+  shell: "set -o pipefail && umask 077; set -o pipefail && wg genkey | tee {{ item.name }}_privatekey | wg pubkey > {{ item.name }}_publickey"  # noqa 204
+  args:
+    executable: /bin/bash
+    creates: "{{ wireguard_path }}/{{ item.name }}_privatekey"
+    chdir: "{{ wireguard_path }}"
+  when: item.public_key is not defined or item.private_key is not defined
+  notify: restart wireguard
+
+- name: Read interface's private key into a variable, for templating purposes
+  slurp:
+    src: "{{ wireguard_path }}/{{ item.name }}_privatekey"
+  register: _wireguard_interface_private_key
+  changed_when: false
+
+- name: Ensure the Wireguard config file is present for this interface
+  template:
+    src: interface.conf.j2
+    dest: "{{ wireguard_path }}/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify: restart wireguard

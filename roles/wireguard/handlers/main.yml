@@ -1,6 +1,8 @@
 ---
 - name: restart wireguard
   service:
-    name: "wg-quick@{{ wireguard_interface_name }}"
+    name: "wg-quick@{{ item.name }}"
     state: restarted
     enabled: yes
+  with_items: "{{ wireguard_interfaces }}"
+  no_log: true

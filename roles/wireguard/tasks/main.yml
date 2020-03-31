@@ -1,19 +1,14 @@
 ---
 - import_tasks: install.yml
 
-- import_tasks: server_keys.yml
-
-- name: Ensure the wireguard config file is present
-  template:
-    src: interface.conf.j2
-    dest: "{{ wireguard_path }}/{{ wireguard_interface_name }}.conf"
-    owner: root
-    group: root
-    mode: 0640
-  notify: restart wireguard
+- name: Process a wireguard interface definition
+  include_tasks: interface.yml
+  with_items: "{{ wireguard_interfaces }}"
 
 - name: Ensure the service is enabled and started
   service:
-    name: "wg-quick@{{ wireguard_interface_name }}"
+    name: "wg-quick@{{ item.name }}"
     state: started
     enabled: yes
+  with_items: "{{ wireguard_interfaces }}"
+  no_log: true

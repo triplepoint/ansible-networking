@@ -1,2 +1,20 @@
 [Interface]
-PrivateKey = {{ wireguard_server_private_key.content | b64decode | trim }}
+PrivateKey = {{ _wireguard_interface_private_key.content | b64decode | trim }}
+ListenPort = {{ item.listen_port }}
+{% if item.postup is defined %}
+PostUp = {{ item.postup }}
+{% endif %}
+{% if item.postdown is defined %}
+PostDown = {{ item.postdown }}
+{% endif %}
+{#
+Address =
+SaveConfig = true
+#}
+
+{% for peer in item.peers %}
+[Peer]
+PublicKey = {{ peer.public_key }}
+AllowedIPs = {{ peer.allowed_ips | join(', ') }}
+
+{% endfor %}

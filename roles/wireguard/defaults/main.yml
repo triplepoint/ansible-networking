@@ -1,5 +1,20 @@
 ---
-
+# The configuration path for storing config files and keys
 wireguard_path: "/etc/wireguard"
 
-wireguard_interface_name: wg0
+# A list of Wireguard interface definitions.  Each item results
+# in a separate Wireguard configuration file and set of key files.
+#
+# For more information, see the Wireguard documentation: https://www.wireguard.com/
+wireguard_interfaces: []
+  # - name: wg0                 # Required, the name of the Wireguard interface
+  #   listen_port: 51820        # Required
+  #   private_key: 12345Ott4Iy5LrBMUkoCyREbo7HfwKnQapQ95V9mcEM=   # Optional, both public_key and private_key are required if either are present.
+  #   public_key: 12345O30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=    #           If either are missing, a new key pair will be generated and these will be ignored.
+  #   # postup: false           # Optional, command string executed when the interface is brought up
+  #   # postdown: false         # Optional, command string executed when the interface is brought down
+
+  #   # A list of peers defined for this Wireguard interface
+  #   peers:
+  #     - public_key: ABCDEF30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=  # Required
+  #       allowed_ips: [192.168.1.20/32, 192.168.1.21/32]           # Required, must be a list with at least one CIDR string
