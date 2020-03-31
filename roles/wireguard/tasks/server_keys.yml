@@ -6,17 +6,19 @@
   changed_when: false
 
 - name: Generate Wireguard public and private keys, if they do not yet exist
-  shell: "umask 077; wg genkey | tee {{ wireguard_path }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
+  shell: "set -o pipefail && umask 077; set -o pipefail && wg genkey | tee {{ wireguard_path }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
+  args:
+    executable: /bin/bash
   when: not _wg_privatekey.stat.exists
   notify: restart wireguard
 
-- name: Read private key
+- name: Read server private key into a variable, for templating purposes
   slurp:
     src: "{{ wireguard_path }}/privatekey"
   register: wireguard_server_private_key
   changed_when: false
 
-- name: Read public key
+- name: Read public key into a variable, for templating purposes
   slurp:
     src: "{{ wireguard_path }}/publickey"
   register: wireguard_server_public_key
