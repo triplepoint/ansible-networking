@@ -21,11 +21,12 @@ provisioner:
       all:
         wireguard_interfaces:
           - name: wg0
+            # address: 1.2.3.4/24
             listen_port: 51820
             private_key: 12345Ott4Iy5LrBMUkoCyREbo7HfwKnQapQ95V9mcEM=
             public_key: 12345O30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=
-            # postup: false
-            # postdown: false
+            # postup: ""
+            # postdown: ""
             peers:
               - public_key: ABCDEF30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=
                 allowed_ips: [192.168.1.20/32, 192.168.1.21/32]

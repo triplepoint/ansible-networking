@@ -1,5 +1,8 @@
 [Interface]
 PrivateKey = {{ _wireguard_interface_private_key.content | b64decode | trim }}
+{% if item.address is defined %}
+Address = {{ item.address }}
+{% endif %}
 ListenPort = {{ item.listen_port }}
 {% if item.postup is defined %}
 PostUp = {{ item.postup }}
@@ -7,10 +10,7 @@ PostUp = {{ item.postup }}
 {% if item.postdown is defined %}
 PostDown = {{ item.postdown }}
 {% endif %}
-{#
-Address =
 SaveConfig = true
-#}
 
 {% for peer in item.peers %}
 [Peer]
