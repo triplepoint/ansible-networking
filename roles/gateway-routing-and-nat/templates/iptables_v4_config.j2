@@ -23,10 +23,10 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 
 ## Gateway Services
-### basic global accept rules - ICMP, loopback, established all accepted
--A INPUT -s 127.0.0.0/8 -d 127.0.0.0/8 -i lo -j ACCEPT
+### basic global accept rules - ICMP, loopback, established/related all accepted
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i lo -s 127.0.0.0/8 -d 127.0.0.0/8 -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
--A INPUT -m state --state ESTABLISHED -j ACCEPT
 
 ### enable traceroute rejections to get sent out
 -A INPUT -p udp -m udp --dport 33434:33523 -j REJECT --reject-with icmp-port-unreachable
