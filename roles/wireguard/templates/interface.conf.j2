@@ -1,7 +1,7 @@
 [Interface]
 PrivateKey = {{ _wireguard_interface_private_key.content | b64decode | trim }}
 {% if item.address is defined %}
-Address = {{ item.address }}
+Address = {{ item.address | join(', ') }}
 {% endif %}
 ListenPort = {{ item.listen_port }}
 {% if item.postup is defined %}

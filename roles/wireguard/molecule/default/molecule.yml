@@ -21,7 +21,7 @@ provisioner:
       all:
         wireguard_interfaces:
           - name: wg0
-            # address: 1.2.3.4/24
+            # address: [1.2.3.4/24]
             listen_port: 51820
             private_key: 12345Ott4Iy5LrBMUkoCyREbo7HfwKnQapQ95V9mcEM=
             public_key: 12345O30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=

@@ -8,7 +8,7 @@ wireguard_path: "/etc/wireguard"
 # For more information, see the Wireguard documentation: https://www.wireguard.com/
 wireguard_interfaces: []
   # - name: wg0                 # Required, the name of the Wireguard interface, used in filenames
-  #   address: 1.2.3.4/24       # Optional
+  #   address: [1.2.3.4/24]     # Optional, must be a list with at least one CIDR string
   #   listen_port: 51820        # Required
   #   private_key: 12345Ott4Iy5LrBMUkoCyREbo7HfwKnQapQ95V9mcEM=   # Optional, both public_key and private_key are required if either are present.
   #   public_key: 12345O30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=    #           If either are missing, a new key pair will be generated and these will be ignored.
