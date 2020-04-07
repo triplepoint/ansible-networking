@@ -6,13 +6,15 @@
 
 ## NAT rewrite traffic out to the WAN
 -A POSTROUTING -o {{ gateway_routing_and_nat_wan_interface }} -j MASQUERADE
+{% if gateway_routing_and_nat_port_forwarding %}
 
-## NAT port forwarding exceptions, if any (see associated FORWARD rules below)
+## NAT port forwarding exceptions (see associated FORWARD rules created in *filter below)
 {% for forwarding in gateway_routing_and_nat_port_forwarding %}
 {% for protocol in forwarding.protocol %}
 -A PREROUTING -p {{ protocol }} -m {{ protocol }} -i {{ gateway_routing_and_nat_wan_interface }} --dport {{ forwarding.port }} -j DNAT --to-destination {{ forwarding.address }}:{{ forwarding.port }}
 {% endfor %}
 {% endfor %}
+{% endif %}
 
 COMMIT
 
@@ -28,10 +30,11 @@ COMMIT
 -A INPUT -i lo -s 127.0.0.0/8 -d 127.0.0.0/8 -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 
-### enable traceroute rejections to get sent out
+### enable traceroute rejections to get sent back
 -A INPUT -p udp -m udp --dport 33434:33523 -j REJECT --reject-with icmp-port-unreachable
 
 ### Subnet Rules
+### # Allow subnets to directly communicate with the gateway in these circumstances
 {% for subnet in gateway_routing_and_nat_subnets %}
 #### {{ subnet.comment }}
 {% for input in subnet.allowed_inputs %}
@@ -39,7 +42,6 @@ COMMIT
 {% endfor %}
 
 {% endfor %}
-
 ### drop all other inbound traffic
 -A INPUT -j DROP
 
@@ -47,6 +49,7 @@ COMMIT
 ## Traffic Forwarding
 ### forward packets along established/related connections
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{% if gateway_routing_and_nat_port_forwarding %}
 
 ### allow traffic from our NAT pinholes, if any (see associated NAT rules above)
 {% for forwarding in gateway_routing_and_nat_port_forwarding %}
@@ -54,14 +57,15 @@ COMMIT
 -A FORWARD -p {{ protocol }} -d {{ forwarding.address }} --dport {{ forwarding.port }} -j ACCEPT
 {% endfor %}
 {% endfor %}
+{% endif %}
 
 ### Subnet rules
+### # Allow each subnet to communicate with the outside world
 {% for subnet in gateway_routing_and_nat_subnets %}
 #### {{ subnet.comment }}
 -A FORWARD -i {{ subnet.interface }} -o {{ gateway_routing_and_nat_wan_interface }} -j ACCEPT
 
 {% endfor %}
-
 ### drop all other forwarded traffic
 -A FORWARD -j DROP
 

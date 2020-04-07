@@ -6,33 +6,19 @@ gateway_routing_and_nat_wan_interface: "eth0"
 # The local subnets within the local network.
 # This is a list of objects that define for which ports and protocols the
 # gateway should accept inbound traffic
-#
-# Example item in the list:
-# - { comment: "LAN",
-#     interface: eth1,
-#     allowed_inputs: [
-#       # DNS
-#       { protocol: tcp, port: 53 },
-#       { protocol: udp, port: 53 },
-#       # DHCP client requests
-#       { protocol: udp, port: "67:68" },
-#       # SSH
-#       { protocol: tcp, port: 22 },
-#     ]
-#   }
-gateway_routing_and_nat_subnets:
-  - { comment: "LAN",
-      interface: eth1,
-      allowed_inputs: [
-        # DNS
-        { protocol: tcp, port: 53 },
-        { protocol: udp, port: 53 },
-        # DHCP client requests
-        { protocol: udp, port: "67:68" },
-        # SSH
-        { protocol: tcp, port: 22 },
-      ]
-    }
+gateway_routing_and_nat_subnets: []
+  # - { comment: "LAN",
+  #     interface: eth1,
+  #     allowed_inputs: [
+  #       # DNS
+  #       { protocol: tcp, port: 53 },
+  #       { protocol: udp, port: 53 },
+  #       # DHCP client requests
+  #       { protocol: udp, port: "67:68" },
+  #       # SSH
+  #       { protocol: tcp, port: 22 },
+  #     ]
+  #   }
 
 # Items in this list represent port-forwarding targets, such that traffic from
 # the outside world onto the given port will always be routed to the target
