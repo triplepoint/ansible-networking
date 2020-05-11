@@ -11,6 +11,7 @@ galaxy_info:
         - xenial
         - bionic
         - focal
+        - focal
   galaxy_tags:
     - vpn
     - wireguard
