@@ -1,5 +1,8 @@
 ---
-- import_tasks: install.yml
+- name: Ensure Wireguard is installed
+  package:
+    name: wireguard
+    state: present
 
 - name: Process a wireguard interface definition
   include_tasks: interface.yml
