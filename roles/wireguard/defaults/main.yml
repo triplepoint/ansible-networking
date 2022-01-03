@@ -19,3 +19,6 @@ wireguard_interfaces: []
   #   peers:
   #     - public_key: ABCDEF30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=  # Required
   #       allowed_ips: [192.168.1.20/32, 192.168.1.21/32]           # Required, must be a list with at least one CIDR string
+
+# Wireguard has no logging by default.  Enabling this will cause logging to appear in the system logging.
+wireguard_enable_logging: false
