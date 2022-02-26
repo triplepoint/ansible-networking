@@ -1,4 +1,4 @@
-# Intro [![Build Status](https://www.travis-ci.com/triplepoint/ansible-gateway-routing-and-nat.svg?branch=main)](https://www.travis-ci.com/triplepoint/ansible-gateway-routing-and-nat)
+# Intro
 This role configures `iptables` such that the host will be suitable for routing
 and NAT.
 
