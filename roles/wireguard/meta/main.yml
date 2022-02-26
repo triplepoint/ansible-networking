@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   role_name: wireguard
+  namespace: triplepoint
   author: Jonathan Hanson
   description: The Wireguard VPN server
   license: MIT
