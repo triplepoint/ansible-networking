@@ -3,6 +3,6 @@
   service:
     name: "wg-quick@{{ item.name }}"
     state: restarted
-    enabled: yes
+    enabled: true
   with_items: "{{ wireguard_interfaces }}"
   no_log: true

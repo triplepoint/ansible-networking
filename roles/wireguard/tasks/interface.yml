@@ -11,12 +11,14 @@
     copy:
       content: "{{ item.public_key }}"
       dest: "{{ wireguard_path }}/{{ item.name }}_publickey"
+      mode: 0644
     notify: restart wireguard
 
   - name: Write the private key to a key file, if keys are defined
     copy:
       content: "{{ item.private_key }}"
       dest: "{{ wireguard_path }}/{{ item.name }}_privatekey"
+      mode: 0644
     notify: restart wireguard
     no_log: true
 
