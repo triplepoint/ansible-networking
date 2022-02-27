@@ -21,6 +21,7 @@
   template:
     src: network_interfaces.j2
     dest: /etc/network/interfaces
+    mode: 0644
   notify: restart networking
 
 - name: Ensure the transmit queue length is permanently set on reboot, for each interface
