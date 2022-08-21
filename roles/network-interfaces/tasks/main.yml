@@ -32,3 +32,4 @@
     insertbefore: "^exit 0"
   with_items: "{{ network_interfaces }}"
   notify: set interface txqueuelens
+  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')

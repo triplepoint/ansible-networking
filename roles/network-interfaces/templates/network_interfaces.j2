@@ -24,4 +24,7 @@ iface {{ interface.interface }} inet {{ interface.configuration }}
 {% if interface.vlan_device is defined %}
   vlan-raw-device {{ interface.vlan_device }}
 {% endif %}
+{% if network_interfaces_txqueue_length and ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '>') %}
+  post-up /sbin/ip link set {{ interface.interface }} txqueuelen {{ network_interfaces_txqueue_length }}
+{% endif %}
 {% endfor %}
