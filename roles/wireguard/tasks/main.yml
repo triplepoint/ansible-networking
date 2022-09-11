@@ -9,11 +9,11 @@
   with_items: "{{ wireguard_interfaces }}"
 
 - name: Ensure wireguard logging state is enabled
-  shell: "echo module wireguard +p > /sys/kernel/debug/dynamic_debug/control"
+  shell: 'echo "module wireguard +p" > /sys/kernel/debug/dynamic_debug/control'
   when: wireguard_enable_logging
 
 - name: Ensure wireguard logging state is disabled
-  shell: "echo module wireguard -p > /sys/kernel/debug/dynamic_debug/control"
+  shell: 'echo "module wireguard -p" > /sys/kernel/debug/dynamic_debug/control'
   when: not wireguard_enable_logging
 
 - name: Ensure the service is enabled and started
