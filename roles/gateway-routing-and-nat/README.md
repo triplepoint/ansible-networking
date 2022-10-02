@@ -42,5 +42,8 @@ pipenv update --dev
 ```
 Be sure and check in the regenerated `Pipfile.lock` when this process is complete.
 
+## TODOs
+- Migrate to nftables, away from iptables
+
 ## License
 MIT

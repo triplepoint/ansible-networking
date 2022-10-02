@@ -19,6 +19,7 @@
   package:
     name: iptables-persistent
     state: present
+  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
 
 - name: Ensure the ipv4 iptables configuration file is in place
   template:
@@ -33,3 +34,6 @@
 #     dest: /etc/iptables/rules.v6
 #     mode: 0644
 #   notify: reload ipv6 iptables
+
+- name: Ensure firewall changes take effect before we go on
+  meta: flush_handlers
