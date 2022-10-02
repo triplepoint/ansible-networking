@@ -17,6 +17,19 @@
     line: "8021q"
   notify: restart networking
 
+- name: Ensure ifupdown is installed
+  package:
+    name: ifupdown
+    state: present
+  notify: restart networking
+
+- name: Ensure netplan isn't in service
+  ansible.builtin.apt:
+    name: netplan.io
+    state: absent
+    purge: true
+  notify: restart networking
+
 - name: Ensure the network interfaces are configured
   template:
     src: network_interfaces.j2
@@ -33,3 +46,6 @@
   with_items: "{{ network_interfaces }}"
   notify: set interface txqueuelens
   when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
+
+- name: Ensure network changes take effect before we go on
+  meta: flush_handlers
