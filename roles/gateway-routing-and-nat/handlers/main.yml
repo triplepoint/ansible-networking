@@ -1,6 +1,6 @@
 ---
-- name: reload ipv4 iptables
-  shell: "iptables-restore < /etc/iptables/rules.v4"
+- name: Reload ipv4 iptables
+  ansible.builtin.shell: "iptables-restore < /etc/iptables/rules.v4"
 
-# - name: reload ipv6 iptables
-#   shell: "iptables-restore < /etc/iptables/rules.v6"
+# - name: Reload ipv6 iptables
+#   ansible.builtin.shell: "iptables-restore < /etc/iptables/rules.v6"
