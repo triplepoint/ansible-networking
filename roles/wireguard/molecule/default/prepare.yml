@@ -3,12 +3,12 @@
   hosts: all
   pre_tasks:
     - name: Update the apt-cache, if necessary
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 86400
       when: ansible_facts['os_family'] == 'Debian'
     - name: Ensure some basic packages are available
-      package:
+      ansible.builtin.package:
         name: "{{ item }}"
         state: present
       with_items:
