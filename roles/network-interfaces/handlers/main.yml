@@ -1,8 +1,8 @@
 ---
-- name: restart networking
-  shell: "ip addr flush {{ item.interface }} && systemctl restart networking.service"
+- name: Restart networking
+  ansible.builtin.shell: "ip addr flush {{ item.interface }} && systemctl restart networking.service"
   with_items: "{{ network_interfaces }}"
 
-- name: set interface txqueuelens
-  command: "ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
+- name: Set interface txqueuelens
+  ansible.builtin.command: "ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
   with_items: "{{ network_interfaces }}"

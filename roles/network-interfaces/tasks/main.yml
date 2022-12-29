@@ -1,51 +1,51 @@
 ---
 - name: Ensure VLAN package is present
-  package:
+  ansible.builtin.package:
     name: vlan
     state: present
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure 802.1q kernel module is loaded
-  modprobe:
+  community.general.modprobe:
     name: 8021q
     state: present
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure 802.1q kernel module is always loaded on boot
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modules
     line: "8021q"
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure ifupdown is installed
-  package:
+  ansible.builtin.package:
     name: ifupdown
     state: present
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure netplan isn't in service
   ansible.builtin.apt:
     name: netplan.io
     state: absent
     purge: true
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure the network interfaces are configured
-  template:
+  ansible.builtin.template:
     src: network_interfaces.j2
     dest: /etc/network/interfaces
     mode: 0644
-  notify: restart networking
+  notify: Restart networking
 
 - name: Ensure the transmit queue length is permanently set on reboot, for each interface
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/rc.local
     line: "/sbin/ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
     regexp: "^/sbin/ip link set {{ item.interface }} txqueuelen"
     insertbefore: "^exit 0"
   with_items: "{{ network_interfaces }}"
-  notify: set interface txqueuelens
+  notify: Set interface txqueuelens
   when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
 
 - name: Ensure network changes take effect before we go on
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
