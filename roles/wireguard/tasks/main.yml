@@ -8,13 +8,20 @@
   ansible.builtin.include_tasks: interface.yml
   with_items: "{{ wireguard_interfaces }}"
 
+# The _wireguard_logging_enabled.rc value is 1 when logging is enabled, and 0 when logging is disabled
+- name: Determine if wireguard logging is enabled
+  ansible.builtin.shell: 'cat /sys/kernel/debug/dynamic_debug/control | grep wireguard | grep "=_"'
+  register: _wireguard_logging_enabled
+  failed_when: _wireguard_logging_enabled.rc|int not in (0, 1)
+  changed_when: false
+
 - name: Ensure wireguard logging state is enabled
   ansible.builtin.shell: 'echo "module wireguard +p" > /sys/kernel/debug/dynamic_debug/control'
-  when: wireguard_enable_logging
+  when: wireguard_enable_logging and _wireguard_logging_enabled.rc == 0
 
 - name: Ensure wireguard logging state is disabled
   ansible.builtin.shell: 'echo "module wireguard -p" > /sys/kernel/debug/dynamic_debug/control'
-  when: not wireguard_enable_logging
+  when: not wireguard_enable_logging and _wireguard_logging_enabled.rc == 1
 
 - name: Ensure the service is enabled and started
   ansible.builtin.service:
