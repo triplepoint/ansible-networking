@@ -1,0 +1,94 @@
+# Configuration file for dnsmasq.
+#
+# For a complete example, see the source at:
+# http://thekelleys.org.uk/gitweb/?p=dnsmasq.git;a=blob_plain;f=dnsmasq.conf.example;hb=HEAD
+
+# The following two options make you a better netizen, since they
+# tell dnsmasq to filter out queries which the public DNS cannot
+# answer, and which load the servers (especially the root servers)
+# unnecessarily. If you have a dial-on-demand link they also stop
+# these requests from bringing up the link unnecessarily.
+
+# Never forward plain names (without a dot or domain part)
+domain-needed
+
+# Never forward addresses in the non-routed address spaces.
+bogus-priv
+
+# Forward to the DNS servers in the order they're defined, not randomly
+strict-order
+
+# Ignore resolv.conf and any other resolution source other than this file
+no-resolv
+
+# Write logs asynchronously, instead of waiting for syslog to return, with a queue depth
+log-async=5
+
+# Forwarding DNS servers
+{% for server in dnsmasq_upstream_dns_servers %}
+server={{ server }}
+{% endfor %}
+
+# Local-only domain resolution - only resolved from DHCP
+local=/{{ dnsmasq_domain }}/
+
+# Additional hostname resolution
+{% for host in dnsmasq_supplemental_domain_names %}
+{% for name in host.names %}
+address=/{{ name }}/{{ host.ip_address }}
+{% endfor %}
+{% endfor %}
+
+# Whitelisted interfaces (if any)
+{% for interface in dnsmasq_network_interface_whitelist %}
+interface={{ interface }}
+{% endfor %}
+
+# Blacklisted interfaces (if any)
+{% for interface in dnsmasq_network_interface_blacklist %}
+except-interface={{ interface }}
+{% endfor %}
+
+# Don't read the /etc/hosts file for name resolution
+no-hosts
+
+# Set up local domain names
+expand-hosts
+domain={{ dnsmasq_domain }}
+
+# Own all DHCP leases on the network
+dhcp-authoritative
+
+# Set the cachesize here.
+cache-size={{ dnsmasq_cache_size }}
+
+# Consider which interface a DNS request is coming from, when resolving
+# the name
+localise-queries
+
+# Reject (and log) addresses from upstream nameservers which are in the private
+# IP ranges.
+stop-dns-rebind
+
+# Exempt 127.0.0.0/8 from rebinding checks.
+rebind-localhost-ok
+
+# Legacy stuff for old DHCP clients
+dhcp-broadcast=tag:needs-broadcast
+
+# Define DHCP ranges
+{% for dhcp_range in dnsmasq_dhcp_ranges %}
+dhcp-range={{ "tag:"+dhcp_range.interface+"," if dhcp_range.interface is defined else "" }}{{ "set:"+dhcp_range.tag+"," if dhcp_range.tag is defined else "" }}{{ dhcp_range.start }},{{ dhcp_range.end }},{{ dhcp_range.ttl }}
+{% endfor %}
+
+# Static leases and hostnames
+{% for host in dnsmasq_reserved_hosts %}
+dhcp-host={{ host.MAC_address }},{{ host.ip_address }},{{ host.name }}
+{% endfor %}
+
+# Define any DHCP options to announce to clients
+# Note, "0.0.0.0" and "[::]" mean "the machine on which dnsmasq is running", for
+# ipv4 and ipv6 respectively
+{% for dhcp_option in dnsmasq_dhcp_options %}
+dhcp-option=tag:{{ dhcp_option.tag }},{{ dhcp_option.name }},{{ dhcp_option.value }}
+{% endfor %}
