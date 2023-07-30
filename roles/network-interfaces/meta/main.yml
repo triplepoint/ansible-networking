@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: network_interfaces
+  namespace: triplepoint
+  author: Jonathan Hanson
+  description: A role for configuring the network interfaces on a physical machine.
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+  github_branch: main
+  galaxy_tags:
+    - networkinterfaces
+dependencies: []

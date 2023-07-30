@@ -1,0 +1,51 @@
+---
+- name: Ensure VLAN package is present
+  ansible.builtin.package:
+    name: vlan
+    state: present
+  notify: Restart networking
+
+- name: Ensure 802.1q kernel module is loaded
+  community.general.modprobe:
+    name: 8021q
+    state: present
+  notify: Restart networking
+
+- name: Ensure 802.1q kernel module is always loaded on boot
+  ansible.builtin.lineinfile:
+    path: /etc/modules
+    line: "8021q"
+  notify: Restart networking
+
+- name: Ensure ifupdown is installed
+  ansible.builtin.package:
+    name: ifupdown
+    state: present
+  notify: Restart networking
+
+- name: Ensure netplan isn't in service
+  ansible.builtin.apt:
+    name: netplan.io
+    state: absent
+    purge: true
+  notify: Restart networking
+
+- name: Ensure the network interfaces are configured
+  ansible.builtin.template:
+    src: network_interfaces.j2
+    dest: /etc/network/interfaces
+    mode: 0644
+  notify: Restart networking
+
+- name: Ensure the transmit queue length is permanently set on reboot, for each interface
+  ansible.builtin.lineinfile:
+    path: /etc/rc.local
+    line: "/sbin/ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
+    regexp: "^/sbin/ip link set {{ item.interface }} txqueuelen"
+    insertbefore: "^exit 0"
+  with_items: "{{ network_interfaces }}"
+  notify: Set interface txqueuelens
+  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
+
+- name: Ensure network changes take effect before we go on
+  ansible.builtin.meta: flush_handlers
