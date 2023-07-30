@@ -13,7 +13,7 @@ None.
 ## Example Playbook
     - hosts: whatever
       roles:
-        - triplepoint.wireguard
+        - triplepoint.networking.wireguard
 
 ## Role Testing
 This role is tested with `molecule`, using `pipenv` to handle dependencies and the Python testing environment.

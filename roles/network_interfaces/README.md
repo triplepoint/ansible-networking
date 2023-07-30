@@ -14,7 +14,7 @@ None.
 ## Example Playbook
     - hosts: whatever
       roles:
-        - triplepoint.network_interfaces
+        - triplepoint.networking.network_interfaces
 
 ## Role Testing
 This role is tested with `molecule`, using `pipenv` to handle dependencies and the Python testing environment.

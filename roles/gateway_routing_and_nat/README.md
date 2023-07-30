@@ -14,7 +14,7 @@ None.
 ## Example Playbook
     - hosts: whatever
       roles:
-        - triplepoint.gateway_routing_and_nat
+        - triplepoint.networking.gateway_routing_and_nat
 
 ## Role Testing
 This role is tested with `molecule`, using `pipenv` to handle dependencies and the Python testing environment.

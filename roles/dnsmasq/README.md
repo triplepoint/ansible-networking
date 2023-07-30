@@ -17,7 +17,7 @@ None.
 ## Example Playbook
     - hosts: whatever
       roles:
-        - triplepoint.dnsmasq
+        - triplepoint.networking.dnsmasq
 
 ## Role Testing
 This role is tested with `molecule`, using `pipenv` to handle dependencies and the Python testing environment.

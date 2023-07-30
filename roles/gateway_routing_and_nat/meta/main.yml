@@ -1,7 +1,5 @@
 ---
 galaxy_info:
-  role_name: gateway_routing_and_nat
-  namespace: triplepoint
   author: Jonathan Hanson
   description: Configuring `iptables` for gateway routing and NAT
   license: MIT
@@ -12,9 +10,7 @@ galaxy_info:
         - xenial
         - bionic
         - focal
-  github_branch: main
   galaxy_tags:
     - iptables
     - nat
     - routing
-dependencies: []

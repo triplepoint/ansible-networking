@@ -1,7 +1,5 @@
 ---
 galaxy_info:
-  role_name: wireguard
-  namespace: triplepoint
   author: Jonathan Hanson
   description: The Wireguard VPN server
   license: MIT
@@ -13,8 +11,6 @@ galaxy_info:
         - bionic
         - focal
         - focal
-  github_branch: main
   galaxy_tags:
     - vpn
     - wireguard
-dependencies: []
