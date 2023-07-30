@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2023-07-29
+
 ### Added
 
-- Initialial release.
-
-### Fixed
+- Initialial release.  2.0.0 due to these roles being separately published in the past.

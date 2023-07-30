@@ -8,7 +8,7 @@ namespace: triplepoint
 name: networking
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.0.0
+version: 2.0.0
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -28,7 +28,7 @@ description: A selection of roles useful for setting up device networking
 license_file: LICENSE.md
 
 # A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
-# requirements as 'namespace' and 'name'  
+# requirements as 'namespace' and 'name'
 tags:
     - linux
     - networking
