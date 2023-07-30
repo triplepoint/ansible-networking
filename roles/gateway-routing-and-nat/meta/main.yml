@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  role_name: gateway_routing_and_nat
+  namespace: triplepoint
+  author: Jonathan Hanson
+  description: Configuring `iptables` for gateway routing and NAT
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+  github_branch: main
+  galaxy_tags:
+    - iptables
+    - nat
+    - routing
+dependencies: []
