@@ -21,9 +21,6 @@ strict-order
 # Ignore resolv.conf and any other resolution source other than this file
 no-resolv
 
-# Write logs asynchronously, instead of waiting for syslog to return, with a queue depth
-log-async=5
-
 # Forwarding DNS servers
 {% for server in dnsmasq_upstream_dns_servers %}
 server={{ server }}
@@ -56,30 +53,17 @@ no-hosts
 expand-hosts
 domain={{ dnsmasq_domain }}
 
-# Own all DHCP leases on the network
-dhcp-authoritative
-
-# Set the cachesize here.
-cache-size={{ dnsmasq_cache_size }}
-
-# Consider which interface a DNS request is coming from, when resolving
-# the name
-localise-queries
-
-# Reject (and log) addresses from upstream nameservers which are in the private
-# IP ranges.
-stop-dns-rebind
-
-# Exempt 127.0.0.0/8 from rebinding checks.
-rebind-localhost-ok
-
-# Legacy stuff for old DHCP clients
-dhcp-broadcast=tag:needs-broadcast
-
 # Define DHCP ranges
 {% for dhcp_range in dnsmasq_dhcp_ranges %}
 dhcp-range={{ "tag:"+dhcp_range.interface+"," if dhcp_range.interface is defined else "" }}{{ "set:"+dhcp_range.tag+"," if dhcp_range.tag is defined else "" }}{{ dhcp_range.start }},{{ dhcp_range.end }},{{ dhcp_range.ttl }}
 {% endfor %}
+
+# Do router advertisements for all subnets where we're doing DHCPv6
+# Unless overridden by ra-stateless, ra-names, et al, the router
+# advertisements will have the M and O bits set, so that the clients
+# get addresses and configuration from DHCPv6, and the A bit reset, so the
+# clients don't use SLAAC addresses.
+#enable-ra
 
 # Static leases and hostnames
 {% for host in dnsmasq_reserved_hosts %}
@@ -92,3 +76,31 @@ dhcp-host={{ host.MAC_address }},{{ host.ip_address }},{{ host.name }}
 {% for dhcp_option in dnsmasq_dhcp_options %}
 dhcp-option=tag:{{ dhcp_option.tag }},{{ dhcp_option.name }},{{ dhcp_option.value }}
 {% endfor %}
+
+# Own all DHCP leases on the network
+dhcp-authoritative
+
+# Set the cachesize here.
+cache-size={{ dnsmasq_cache_size }}
+
+# For debugging purposes, log each DNS query as it passes through
+# dnsmasq.
+#log-queries
+
+# Log lots of extra information about DHCP transactions.
+#log-dhcp
+
+## No longer in the conf example
+# Consider which interface a DNS request is coming from, when resolving
+# the name
+#localise-queries
+
+# Reject (and log) addresses from upstream nameservers which are in the private
+# IP ranges.
+# stop-dns-rebind
+
+# Exempt 127.0.0.0/8 from rebinding checks.
+# rebind-localhost-ok
+
+# Legacy stuff for old DHCP clients
+# dhcp-broadcast=tag:needs-broadcast
