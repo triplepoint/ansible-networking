@@ -1,0 +1,40 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
+    tty: true
+    privileged: true
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:rw"
+    override_command: false
+    environment:
+      container: docker
+    pre_build_image: true
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        wireguard_interfaces:
+          - name: wg0
+            # address: [1.2.3.4/24]
+            listen_port: 51820
+            private_key: 12345Ott4Iy5LrBMUkoCyREbo7HfwKnQapQ95V9mcEM=
+            public_key: 12345O30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=
+            # postup: ""
+            # postdown: ""
+            peers:
+              - public_key: ABCDEF30VlEJ561KvO/8VMKpVg6ASs3sLce70VRNZUQ=
+                allowed_ips: [192.168.1.20/32, 192.168.1.21/32]
+
+verifier:
+  name: testinfra
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+  flake8 --max-line-length=120
