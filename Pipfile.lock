@@ -325,7 +325,6 @@
                 "sha256:fa28e909776dc69efb6ed975a63691bc8172b64ff357e663a1bb06ff3c9b589a",
                 "sha256:fe494faa90ce6381770746077243231e0b83ff3f17069d748f645617cefe19d4"
             ],
-            "markers": "python_version >= '3.6'",
             "version": "==7.3.2"
         },
         "cryptography": {
@@ -378,7 +377,6 @@
                 "sha256:521f5f56c50f8426f5e03ad3b281b490a87ef15bc6c526f168290f0c7148d44e",
                 "sha256:57dbda9b35157b05fb3e58ee91448612eb674172fab98ee235ccb0b5bee19a1c"
             ],
-            "markers": "python_version >= '3.7'",
             "version": "==3.13.1"
         },
         "idna": {
@@ -590,7 +588,6 @@
                 "sha256:0d009c083ea859a71b76adf7c1d502e4bc170b80a8ef002da5806527b9591fac",
                 "sha256:d989d136982de4e3b29dabcc838ad581c64e8ed52c11fbe86ddebd9da0818cd5"
             ],
-            "markers": "python_version >= '3.6'",
             "version": "==7.4.3"
         },
         "pytest-mock": {
@@ -972,7 +969,7 @@
                 "sha256:f481f16baec5290e45aebdc2a5168ebc6d35189ae6fea7a58787613a25f6e875",
                 "sha256:fff3573c2db359f091e1589c3d7c5fc2f86f5bdb6f24252c2d8e539d4e45f412"
             ],
-            "markers": "python_version < '3.12' and platform_python_implementation == 'CPython'",
+            "markers": "platform_python_implementation == 'CPython' and python_version < '3.12'",
             "version": "==0.2.8"
         },
         "subprocess-tee": {
