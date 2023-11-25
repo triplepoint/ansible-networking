@@ -1,0 +1,87 @@
+flush ruleset
+
+define DEV_WAN = {{ gateway_routing_and_nat_wan_interface }}
+
+table ip nat {
+    chain PREROUTING {
+        type nat hook prerouting priority -100; policy accept;
+{% if gateway_routing_and_nat_port_forwarding %}
+
+        ## NAT port forwarding exceptions (see associated FORWARD rules created in *filter below)
+{% for forwarding in gateway_routing_and_nat_port_forwarding %}
+{% for protocol in forwarding.protocol %}
+        {# TODO - convert to nft: -A PREROUTING -p {{ protocol }} -m {{ protocol }} -i $DEV_WAN --dport {{ forwarding.port }} -j DNAT --to-destination {{ forwarding.address }}:{{ forwarding.port }} #}
+{% endfor %}
+{% endfor %}
+{% endif %}
+    }
+    chain INPUT {
+        type nat hook input priority 100; policy accept;
+    }
+    chain OUTPUT {
+        type nat hook output priority -100; policy accept;
+    }
+    chain POSTROUTING {
+        type nat hook postrouting priority 100; policy accept;
+
+        # NAT rewrite traffic out to the WAN
+        oifname "$DEV_WAN" counter masquerade
+    }
+}
+
+table ip filter {
+    chain INPUT {
+        type filter hook input priority 0; policy accept;
+
+        ## Gateway Services
+        ### basic global accept rules - ICMP, loopback, established/related all accepted
+        ct state related,established counter accept
+        iifname "lo" ip saddr 127.0.0.0/8 ip daddr 127.0.0.0/8 counter accept
+        ip protocol icmp counter accept
+
+        ### enable traceroute rejections to get sent back
+        udp dport 33434-33523 counter reject
+
+        ### Subnet Rules
+        ### # Allow subnets to directly communicate with the gateway in these circumstances
+{% for subnet in gateway_routing_and_nat_subnets %}
+        #### {{ subnet.comment }}
+{% for input in subnet.allowed_inputs %}
+        iifname "{{ subnet.interface }}" {{ input.protocol }} dport {{ input.port }} counter accept
+{% endfor %}
+
+{% endfor %}
+
+        ### drop all other inbound traffic
+        counter drop
+    }
+    chain FORWARD {
+        type filter hook forward priority 0; policy accept;
+
+        ## Traffic Forwarding
+        ### forward packets along established/related connections
+        ct state related,established counter accept
+{% if gateway_routing_and_nat_port_forwarding %}
+
+        ### allow traffic from our NAT pinholes, if any (see associated NAT rules above)
+{% for forwarding in gateway_routing_and_nat_port_forwarding %}
+{% for protocol in forwarding.protocol %}
+        {# TODO - convert to nft:  -A FORWARD -p {{ protocol }} -d {{ forwarding.address }} --dport {{ forwarding.port }} -j ACCEPT #}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+        ### Subnet rules
+        ### # Allow each subnet to communicate with the outside world
+{% for subnet in gateway_routing_and_nat_subnets %}
+        #### {{ subnet.comment }}
+        iifname "{{ subnet.interface }}" oifname "$DEV_WAN" counter accept
+
+{% endfor %}
+        ### drop all other forwarded traffic
+        counter drop
+    }
+    chain OUTPUT {
+        type filter hook output priority 0; policy accept;
+    }
+}

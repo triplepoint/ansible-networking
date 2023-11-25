@@ -1,8 +1,5 @@
 ---
-- name: Reload ipv4 iptables
-  ansible.builtin.shell: "iptables-restore < /etc/iptables/rules.v4"
-  changed_when: True
-
-# - name: Reload ipv6 iptables
-#   ansible.builtin.shell: "iptables-restore < /etc/iptables/rules.v6"
-#   changed_when: True
+- name: Reload nftables
+  ansible.builtin.service:
+    name: nftables
+    state: reloaded

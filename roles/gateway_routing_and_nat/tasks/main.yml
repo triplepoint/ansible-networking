@@ -7,33 +7,41 @@
     state: present
     reload: true
 
-# - name: Ensure that ipv6 forwarding is enabled
-#   ansible.posix.sysctl:
-#     name: "net.ipv6.conf.all.forwarding"
-#     value: "1"
-#     sysctl_set: true
-#     state: present
-#     reload: true
+# TODO - re-enable this when ipv6 is a thing
+- name: Ensure that ipv6 forwarding is disabled
+  ansible.posix.sysctl:
+    name: "net.ipv6.conf.all.forwarding"
+    value: "0"  # TODO this should be 1 to enable
+    sysctl_set: true
+    state: present
+    reload: true
 
-- name: Ensure iptables-persistent is installed
+- name: Ensure the iptables-restore package isn't installed
   ansible.builtin.package:
     name: iptables-persistent
-    state: present
-  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
+    state: absent
 
-- name: Ensure the ipv4 iptables configuration file is in place
+- name: Ensure the nftables configuration file is in place
   ansible.builtin.template:
-    src: iptables_v4_config.j2
-    dest: /etc/iptables/rules.v4
+    src: nftables.j2
+    dest: /etc/nftables.conf
+    validate: nft --check -f %s
     mode: 0644
-  notify: Reload ipv4 iptables
+  notify: Reload nftables
 
-# - name: Ensure the ipv6 iptables configuration file is in place
-#   ansible.builtin.template:
-#     src: iptables_v6_config.j2
-#     dest: /etc/iptables/rules.v6
-#     mode: 0644
-#   notify: Reload ipv6 iptables
+- name: Ensure the iptables service is disabled and stopped (if installed)
+  ansible.builtin.service:
+    name: iptables
+    state: stopped
+    enabled: false
+  register: _result_systemd_stop
+  failed_when: "_result_systemd_stop is failed and 'Could not find the requested service' not in _result_systemd_stop.msg"
+
+- name: Ensure the nftables service is enabled and started
+  ansible.builtin.service:
+    name: nftables
+    state: started
+    enabled: true
 
 - name: Ensure firewall changes take effect before we go on
   ansible.builtin.meta: flush_handlers

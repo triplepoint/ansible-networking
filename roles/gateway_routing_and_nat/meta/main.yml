@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Jonathan Hanson
-  description: Configuring `iptables` for gateway routing and NAT
+  description: Configuring `nftables` for gateway routing and NAT
   license: MIT
   min_ansible_version: "2.9"
   platforms:
@@ -11,6 +11,6 @@ galaxy_info:
         - bionic
         - focal
   galaxy_tags:
-    - iptables
+    - nftables
     - nat
     - routing

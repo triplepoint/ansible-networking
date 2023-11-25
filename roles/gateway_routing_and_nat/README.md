@@ -1,5 +1,5 @@
 # Intro
-This role configures `iptables` such that the host will be suitable for routing
+This role configures `nftables` such that the host will be suitable for routing
 and NAT.
 
 ## Requirements
@@ -41,9 +41,6 @@ You shouldn't have to do this very often, but if you change the Python package r
 pipenv update --dev
 ```
 Be sure and check in the regenerated `Pipfile.lock` when this process is complete.
-
-## TODOs
-- Migrate to nftables, away from iptables
 
 ## License
 MIT
