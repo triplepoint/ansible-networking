@@ -5,26 +5,52 @@ iface lo inet loopback
 
 # {{ interface.comment }}
 auto {{ interface.interface }}
-iface {{ interface.interface }} inet {{ interface.configuration }}
-{% if interface.address is defined %}
-  address {{ interface.address }}
+{% if interface.ipv4 is defined %}
+iface {{ interface.interface }} inet {{ interface.ipv4.configuration }}
+{% if interface.ipv4.address is defined %}
+  address {{ interface.ipv4.address }}
 {% endif %}
-{% if interface.netmask is defined %}
-  netmask {{ interface.netmask }}
+{% if interface.ipv4.netmask is defined %}
+  netmask {{ interface.ipv4.netmask }}
 {% endif %}
-{% if interface.gateway is defined %}
-  gateway {{ interface.gateway }}
+{% if interface.ipv4.gateway is defined %}
+  gateway {{ interface.ipv4.gateway }}
 {% endif %}
-{% if interface.network is defined %}
-  network {{ interface.network }}
+{% if interface.ipv4.network is defined %}
+  network {{ interface.ipv4.network }}
 {% endif %}
-{% if interface.broadcast is defined %}
-  broadcast {{ interface.broadcast }}
+{% if interface.ipv4.broadcast is defined %}
+  broadcast {{ interface.ipv4.broadcast }}
 {% endif %}
-{% if interface.vlan_device is defined %}
-  vlan-raw-device {{ interface.vlan_device }}
+{% if interface.ipv4.vlan_device is defined %}
+  vlan-raw-device {{ interface.ipv4.vlan_device }}
 {% endif %}
 {% if network_interfaces_txqueue_length and ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '>') %}
   post-up /sbin/ip link set {{ interface.interface }} txqueuelen {{ network_interfaces_txqueue_length }}
+{% endif %}
+{% endif %}
+{% if interface.ipv6 is defined %}
+iface {{ interface.interface }} inet6 {{ interface.ipv6.configuration }}
+{% if interface.ipv6.address is defined %}
+  address {{ interface.ipv6.address }}
+{% endif %}
+{% if interface.ipv6.netmask is defined %}
+  netmask {{ interface.ipv6.netmask }}
+{% endif %}
+{% if interface.ipv6.gateway is defined %}
+  gateway {{ interface.ipv6.gateway }}
+{% endif %}
+{% if interface.ipv6.network is defined %}
+  network {{ interface.ipv6.network }}
+{% endif %}
+{% if interface.ipv6.broadcast is defined %}
+  broadcast {{ interface.ipv6.broadcast }}
+{% endif %}
+{% if interface.ipv6.vlan_device is defined %}
+  vlan-raw-device {{ interface.ipv6.vlan_device }}
+{% endif %}
+{% if network_interfaces_txqueue_length and ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '>') %}
+  post-up /sbin/ip link set {{ interface.interface }} txqueuelen {{ network_interfaces_txqueue_length }}
+{% endif %}
 {% endif %}
 {% endfor %}

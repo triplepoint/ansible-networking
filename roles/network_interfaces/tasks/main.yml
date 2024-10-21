@@ -20,7 +20,7 @@
 - name: Ifupdown networking
   when: True
   block:
-    - name: Ensure netplan is in service
+    - name: Ensure netplan is not installed
       ansible.builtin.package:
         name: netplan.io
         state: absent
@@ -48,7 +48,7 @@
         state: absent
       notify: Restart networking
 
-    - name: Ensure netplan is in service
+    - name: Ensure netplan is installed
       ansible.builtin.package:
         name: netplan.io
         state: present
