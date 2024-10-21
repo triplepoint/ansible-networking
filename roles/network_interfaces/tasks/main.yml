@@ -17,35 +17,49 @@
     line: "8021q"
   notify: Restart networking
 
-- name: Ensure ifupdown is installed
-  ansible.builtin.package:
-    name: ifupdown
-    state: present
-  notify: Restart networking
+- name: Ifupdown networking
+  when: True
+  block:
+    - name: Ensure netplan is in service
+      ansible.builtin.package:
+        name: netplan.io
+        state: absent
+      notify: Restart networking
 
-- name: Ensure netplan isn't in service
-  ansible.builtin.apt:
-    name: netplan.io
-    state: absent
-    purge: true
-  notify: Restart networking
+    - name: Ensure ifupdown is installed
+      ansible.builtin.package:
+        name: ifupdown
+        state: present
+      notify: Restart networking
 
-- name: Ensure the network interfaces are configured
-  ansible.builtin.template:
-    src: network_interfaces.j2
-    dest: /etc/network/interfaces
-    mode: 0644
-  notify: Restart networking
+    - name: Ensure the network interfaces are configured
+      ansible.builtin.template:
+        src: network_interfaces.j2
+        dest: /etc/network/interfaces
+        mode: 0644
+      notify: Restart networking
 
-- name: Ensure the transmit queue length is permanently set on reboot, for each interface
-  ansible.builtin.lineinfile:
-    path: /etc/rc.local
-    line: "/sbin/ip link set {{ item.interface }} txqueuelen {{ network_interfaces_txqueue_length }}"
-    regexp: "^/sbin/ip link set {{ item.interface }} txqueuelen"
-    insertbefore: "^exit 0"
-  with_items: "{{ network_interfaces }}"
-  notify: Set interface txqueuelens
-  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
+- name: Netplan networking
+  when: False
+  block:
+    - name: Ensure ifupdown is not installed
+      ansible.builtin.package:
+        name: ifupdown
+        state: absent
+      notify: Restart networking
+
+    - name: Ensure netplan is in service
+      ansible.builtin.package:
+        name: netplan.io
+        state: present
+      notify: Restart networking
+
+    - name: Ensure the netplan interfaces are configured
+      ansible.builtin.template:
+        src: netplan.yaml.j2
+        dest: /etc/netplan/01-network-manager-all.yaml
+        mode: 0644
+      notify: Restart networking
 
 - name: Ensure network changes take effect before we go on
   ansible.builtin.meta: flush_handlers
