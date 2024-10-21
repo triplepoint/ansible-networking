@@ -49,6 +49,12 @@ iface {{ interface.interface }} inet6 {{ interface.ipv6.configuration }}
 {% if interface.ipv6.vlan_device is defined %}
   vlan-raw-device {{ interface.ipv6.vlan_device }}
 {% endif %}
+{% if interface.ipv6.request_prefix is defined %}
+  request_prefix {{ interface.ipv6.request_prefix }}
+{% endif %}
+{% if interface.ipv6.accept_ra is defined %}
+  accept_ra {{ interface.ipv6.accept_ra }}
+{% endif %}
 {% if network_interfaces_txqueue_length and ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '>') %}
   post-up /sbin/ip link set {{ interface.interface }} txqueuelen {{ network_interfaces_txqueue_length }}
 {% endif %}
