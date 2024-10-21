@@ -67,7 +67,7 @@ dhcp-range={{ "tag:"+dhcp_range.interface+"," if dhcp_range.interface is defined
 
 # Static leases and hostnames
 {% for host in dnsmasq_reserved_hosts %}
-dhcp-host={{ host.MAC_address }},{{ host.ip_address }},{{ host.name }}
+dhcp-host={{ host.MAC_address }},{{ host.ip4_address }},{{ host.ip6_address+"," if host.ip6_address is defined else "" }}{{ host.name }}
 {% endfor %}
 
 # Define any DHCP options to announce to clients

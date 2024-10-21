@@ -44,7 +44,7 @@ provisioner:
             tag: "someothertag"
         dnsmasq_reserved_hosts:
           - MAC_address: "aa:bb:cc:11:22:33"
-            ip_address: "192.168.1.10"
+            ip4_address: "192.168.1.10"
             name: "laptop"
         dnsmasq_supplemental_domain_names:
           - ip_address: "192.168.1.123"
