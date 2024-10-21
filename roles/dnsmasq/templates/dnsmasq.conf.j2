@@ -63,7 +63,7 @@ dhcp-range={{ "tag:"+dhcp_range.interface+"," if dhcp_range.interface is defined
 # advertisements will have the M and O bits set, so that the clients
 # get addresses and configuration from DHCPv6, and the A bit reset, so the
 # clients don't use SLAAC addresses.
-#enable-ra
+enable-ra
 
 # Static leases and hostnames
 {% for host in dnsmasq_reserved_hosts %}
