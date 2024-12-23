@@ -11,14 +11,14 @@
     ansible.builtin.copy:
       content: "{{ item.public_key }}"
       dest: "{{ wireguard_path }}/{{ item.name }}_publickey"
-      mode: 0644
+      mode: "0644"
     notify: Restart wireguard
 
   - name: Write the private key to a key file, if keys are defined
     ansible.builtin.copy:
       content: "{{ item.private_key }}"
       dest: "{{ wireguard_path }}/{{ item.name }}_privatekey"
-      mode: 0644
+      mode: "0644"
     notify: Restart wireguard
     no_log: true
 
@@ -43,5 +43,5 @@
     dest: "{{ wireguard_path }}/{{ item.name }}.conf"
     owner: root
     group: root
-    mode: 0640
+    mode: "0640"
   notify: Restart wireguard

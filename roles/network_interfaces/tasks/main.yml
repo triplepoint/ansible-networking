@@ -36,7 +36,7 @@
       ansible.builtin.template:
         src: network_interfaces.j2
         dest: /etc/network/interfaces
-        mode: 0644
+        mode: "0644"
       notify: Restart networking
 
 - name: Netplan networking
@@ -58,7 +58,7 @@
       ansible.builtin.template:
         src: netplan.yaml.j2
         dest: /etc/netplan/01-network-manager-all.yaml
-        mode: 0644
+        mode: "0644"
       notify: Restart networking
 
 - name: Ensure network changes take effect before we go on
