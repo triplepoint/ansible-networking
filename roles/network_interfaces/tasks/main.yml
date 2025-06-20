@@ -17,22 +17,64 @@
     line: "8021q"
   notify: Restart networking
 
-- name: Ensure netplan is not installed
+- name: Old networking
+  when: true
+  block:
+    - name: Ensure netplan is not installed
+      ansible.builtin.package:
+        name: netplan.io
+        state: absent
+      notify: Restart networking
+
+    - name: Ensure ifupdown is installed
+      ansible.builtin.package:
+        name: ifupdown
+        state: present
+      notify: Restart networking
+
+    - name: Ensure the network interfaces are configured
+      ansible.builtin.template:
+        src: network_interfaces.j2
+        dest: /etc/network/interfaces
+        mode: "0644"
+      notify: Restart networking
+
+- name: New networking
+  when: false
+  block:
+    - name: Ensure netplan is installed
+      ansible.builtin.package:
+        name: netplan.io
+        state: present
+      notify: Restart networking
+
+    - name: Ensure ifupdown is not installed
+      ansible.builtin.package:
+        name: ifupdown
+        state: absent
+      notify: Restart networking
+
+    # something something systemd-networkd
+
+- name: Ensure isc-dhcp is not installed
   ansible.builtin.package:
-    name: netplan.io
+    name: "{{ item }}"
     state: absent
   notify: Restart networking
+  with_items:
+    - isc-dhcp-client
+    - isc-dhcp-common
 
-- name: Ensure ifupdown is installed
+- name: Ensure dhcpcd is installed
   ansible.builtin.package:
-    name: ifupdown
+    name: dhcpcd
     state: present
   notify: Restart networking
 
 - name: Ensure the network interfaces are configured
   ansible.builtin.template:
-    src: network_interfaces.j2
-    dest: /etc/network/interfaces
+    src: dhcpcd.conf.j2
+    dest: /etc/dhcpcd.conf
     mode: "0644"
   notify: Restart networking
 

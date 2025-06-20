@@ -1,4 +1,31 @@
 ---
+
+- name: Ensure iptables-persistent is removed
+  ansible.builtin.package:
+    name: iptables-persistent
+    state: absent
+
+- name: Ensure nftables is installed
+  ansible.builtin.package:
+    name: nftables
+    state: present
+
+- name: Ensure the nftables configuration file is in place
+  ansible.builtin.template:
+    src: nftables_config.j2
+    dest: /etc/nftables.conf
+    mode: "0644"
+  notify: Reload nftables
+
+- name: Ensure that nftables is started and enabled
+  ansible.builtin.service:
+    name: nftables
+    state: started
+    enabled: true
+
+- name: Ensure firewall changes take effect before we go on
+  ansible.builtin.meta: flush_handlers
+
 - name: Ensure that ipv4 forwarding is enabled
   ansible.posix.sysctl:
     name: "net.ipv4.ip_forward"
@@ -7,33 +34,10 @@
     state: present
     reload: true
 
-# - name: Ensure that ipv6 forwarding is enabled
-#   ansible.posix.sysctl:
-#     name: "net.ipv6.conf.all.forwarding"
-#     value: "1"
-#     sysctl_set: true
-#     state: present
-#     reload: true
-
-- name: Ensure iptables-persistent is installed
-  ansible.builtin.package:
-    name: iptables-persistent
+- name: Ensure that ipv6 forwarding is enabled
+  ansible.posix.sysctl:
+    name: "net.ipv6.conf.all.forwarding"
+    value: "1"
+    sysctl_set: true
     state: present
-  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '<=')
-
-- name: Ensure the ipv4 iptables configuration file is in place
-  ansible.builtin.template:
-    src: iptables_v4_config.j2
-    dest: /etc/iptables/rules.v4
-    mode: "0644"
-  notify: Reload ipv4 iptables
-
-# - name: Ensure the ipv6 iptables configuration file is in place
-#   ansible.builtin.template:
-#     src: iptables_v6_config.j2
-#     dest: /etc/iptables/rules.v6
-#     mode: "0644"
-#   notify: Reload ipv6 iptables
-
-- name: Ensure firewall changes take effect before we go on
-  ansible.builtin.meta: flush_handlers
+    reload: true

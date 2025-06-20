@@ -12,12 +12,23 @@
     mode: "0644"
   notify: Restart dnsmasq
 
-- name: Ensure systemd-resolved isn't set up to handle DNS resolution
-  ansible.builtin.service:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
-  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('18.04', '>=')
+- name: Ensure systemd-resolved isn't set up to listen on port 53
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: "DNSStubListener="
+    line: "DNSStubListener=no"
+  notify: Restart resolved
+
+- name: Ensure dnsmasq starts before systemd-resolved
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/system/multi-user.target.wants/dnsmasq.service
+    insertafter: "[Unit]"
+    regexp: "^Before=systemd-resolved.service"
+    line: "Before=systemd-resolved.service"
+  notify:
+    - Reload systemd
+    - Restart resolved
+    - Restart dnsmasq
 
 - name: Ensure Dnsmasq changes take effect before we go on
   ansible.builtin.meta: flush_handlers

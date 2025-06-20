@@ -10,10 +10,14 @@ dnsmasq_domain: local
 # IPV6 servers are also listed, even if the network doesn't otherwise support
 # IPV6.
 dnsmasq_upstream_dns_servers:
-  - "8.8.8.8"
-  - "8.8.4.4"
-  - "2001:4860:4860::8888"
-  - "2001:4860:4860::8844"
+  - "1.1.1.1"  # Cloudflare
+  - "1.0.0.1"  # Cloudflare
+  - "8.8.8.8"  # Google
+  - "8.8.4.4"  # Google
+  - "2606:4700:4700::1111"  # Cloudflare
+  - "2606:4700:4700::1001"  # Cloudflare
+  - "2001:4860:4860::8888"  # Google
+  - "2001:4860:4860::8844"  # Google
 
 dnsmasq_cache_size: 5000
 
@@ -31,32 +35,38 @@ dnsmasq_network_interface_blacklist: []
 
 # Define which IP-address ranges will have DHCP leases assigned
 dnsmasq_dhcp_ranges: []
-  # - { start: "192.168.1.10",  # start of the assigned range
-  #     end: "192.168.1.150",   # End of the assigned range.  Can also be the word "static", for ranges that won't assign hosts without an explicit dhcp-host definition
-  #     ttl: "12h",             # How long do leases live?  Typically an hour count like "6h"
-  #     interface: "eth1",      # optional, the network interface on which to assign the range.  Not providing this will make this rule apply to all requests.
-  #     tag: "sometag"          # optional, a tag to be set which can be used elsewhere to scope configurations for clients in this range.
-  # }
+  # - start: "192.168.1.10"   # start of the assigned range
+  #   end: "192.168.1.150"    # End of the assigned range.
+  #   ttl: "12h"              # Optional, how long do leases live?  Typically an hour count like "6h".
+  #   interface: "eth1"       # optional, the network interface on which to assign the range.  Not providing this will make this rule apply to all requests.
+  #   tag: "sometag"          # optional, a tag to be set which can be used elsewhere to scope configurations for clients in this range.
+  # - start: "192.168.1.1"
+  #   static: true            # Instead of allowing DHCP ranges, this subnet only allows static assignments.
+  #   interface: "eth1"
+  #   tag: "sometag"
+  # - rawstring: "::1,constructor:eth1,ra-stateless,ra-names,12h"   # If you know what you're doing you can just write a raw dhcp-range= string.
+
+# Arbitrary CNAME records for the DNS server to serve
+dnsmasq_cnames: []
+  # - from: something.example.com
+  #   to: some-service.lan
 
 # Define hosts with reserved DHCP leases, if any.  This is useful in combination
 # with `dnsmasq_dhcp_ranges` range definitions above with "static" `end` values,
 # allowing you to provision assigned static IP addresses.
 dnsmasq_reserved_hosts: []
-  # - { MAC_address: "aa:bb:cc:11:22:33",  # May be a comma-separated list string, for devices with more than one MAC address (like devices with WIFI and ethernet adapters, for example)
-  #     ip_address: "192.168.1.10",
-  #     name: "laptop"
-  # }
+  # - MAC_address: "aa:bb:cc:11:22:33"   # May be a comma-separated list string, for devices with more than one MAC address (like devices with WIFI and ethernet adapters, for example)
+  #   ip_address: "192.168.1.10"
+  #   name: "laptop"
 
 # Additional domain names to resolve to arbitrary IP addreses.  This allows,
 # for example, domains to be defined for the local LAN.  It's not a bad idea
 # to add a domain name for your gateway machine.
 dnsmasq_supplemental_domain_names: []
-  # - { ip_address: "192.168.1.1",
-  #     names: ["myrouter.local"]
-  #   }
-  # - { ip_address: "192.168.1.123",
-  #     names: ["one.fish", "two.fish", "red.fish"]
-  # }
+  # - ip_address: "192.168.1.1"
+  #   names: ["myrouter.local"]
+  # - ip_address: "192.168.1.123"
+  #   names: ["one.fish", "two.fish", "red.fish"]
 
 # A list of dhcp options to pass along to clients that match ALL the given tags.
 # Note that a default tag named the same as the request's interface is always present

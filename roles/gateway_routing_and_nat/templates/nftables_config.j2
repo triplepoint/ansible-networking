@@ -1,0 +1,85 @@
+#!/usr/sbin/nft -f
+
+## Note: this file is handwritten to match what I want in my network JMH 2025.04.19
+## TODO: factor this out into a template that applies the configuration in gateway_routing_and_nat_subnets
+
+flush ruleset
+
+define DEV_WAN = {{ gateway_routing_and_nat_wan_interface }}
+define DEV_PRIVATE = enp1s0
+define DEV_GUEST = enp1s0.2
+define DEV_WG  = wg0
+define WG_PORT = 51820
+
+define NET_PRIVATE = 192.168.0.0/16
+
+table inet global {
+    chain inbound_world {
+        ip protocol icmp limit rate 5/second accept
+        ip6 nexthdr icmpv6 limit rate 5/second accept
+
+        # allow Wireguard for both ipv4/6, and DHCP client for ipv4, and DHCPv6 client for ipv6 from the outside world
+        ip protocol . th dport vmap { udp . $WG_PORT : accept, udp . 68 : accept }
+        ip6 nexthdr . th dport vmap { udp . $WG_PORT : accept, udp . 546 : accept }
+    }
+
+    chain inbound_private {
+        ip protocol icmp limit rate 5/second accept
+        ip6 nexthdr icmpv6 limit rate 5/second accept
+
+        # For both ipv4 and ipv6, allow DHCP server, DNS, SSH, Iperf, NTP, and Wireguard from the private network
+        ip protocol . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept, tcp . 22 : accept, tcp . 5201 : accept, udp . 123 : accept, udp . $WG_PORT : accept }
+        ip6 nexthdr . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept, tcp . 22 : accept, tcp . 5201 : accept, udp . 123 : accept, udp . $WG_PORT : accept }
+    }
+
+    chain inbound_guest {
+        ip protocol icmp limit rate 5/second accept
+        ip6 nexthdr icmpv6 limit rate 5/second accept
+
+        # For both ipv4 and ipv6, allow DHCP server and DNS from the private wireless network
+        ip protocol . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept }
+        ip6 nexthdr . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept }
+    }
+
+    chain inbound_wg {
+        ip protocol icmp limit rate 5/second accept
+        ip6 nexthdr icmpv6 limit rate 5/second accept
+
+        # For both ipv4 and ipv6, allow DHCP server, DNS, and NTP from the wireguard VPN network
+        ip protocol . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept, udp . 123 : accept }
+        ip6 nexthdr . th dport vmap { udp . 53 : accept, tcp . 53 : accept, udp . 67 : accept, udp . 123 : accept }
+    }
+
+    chain inbound {
+        type filter hook input priority 0; policy drop;
+
+        # Allow traffic from established and related packets, drop invalid
+        ct state vmap { established : accept, related : accept, invalid : drop }
+
+        # allow loopback traffic, anything else jump to chain for further evaluation
+        iifname vmap { lo : accept, $DEV_WAN : jump inbound_world, $DEV_PRIVATE : jump inbound_private, $DEV_GUEST : jump inbound_guest, $DEV_WG : jump inbound_wg }
+
+        # the rest is dropped by the above policy
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        # Allow traffic from established and related packets, drop invalid
+        ct state vmap { established : accept, related : accept, invalid : drop }
+
+        # Allowed cross network traffic (note the directions of the arrows):
+        # - Private --> WAN
+        # - Guest --> WAN
+        # - Wireguard <--> Private
+        # - Wireguard --> WAN
+        meta iifname . meta oifname { $DEV_PRIVATE . $DEV_WAN, $DEV_GUEST . $DEV_WAN, $DEV_WG . $DEV_PRIVATE, $DEV_PRIVATE . $DEV_WG, $DEV_WG . $DEV_WAN } accept
+
+        # the rest is dropped by the above policy
+    }
+
+    chain postrouting {
+        type nat hook postrouting priority 100; policy accept;
+        ip saddr $NET_PRIVATE meta oifname $DEV_WAN counter masquerade
+    }
+}
