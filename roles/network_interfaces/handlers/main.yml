@@ -1,4 +1,4 @@
 ---
-- name: Restart networking
+- name: Restart networking  # noqa no-changed-when
   ansible.builtin.shell: "ip addr flush {{ item.interface }} && systemctl restart networking.service"
-  with_items: "{{ network_interfaces }}"
+  with_items: "{{ network_interfaces_ifaces }}"

@@ -55,7 +55,8 @@ dnsmasq_cnames: []
 # with `dnsmasq_dhcp_ranges` range definitions above with "static" `end` values,
 # allowing you to provision assigned static IP addresses.
 dnsmasq_reserved_hosts: []
-  # - MAC_address: "aa:bb:cc:11:22:33"   # May be a comma-separated list string, for devices with more than one MAC address (like devices with WIFI and ethernet adapters, for example)
+  # - MAC_address: "aa:bb:cc:11:22:33"   # May be a comma-separated list string, for devices with more than one MAC
+                                         # address (like devices with WIFI and ethernet adapters, for example)
   #   ip_address: "192.168.1.10"
   #   name: "laptop"
 

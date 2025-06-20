@@ -1,7 +1,7 @@
 # The loopback network interface
 auto lo
 iface lo inet loopback
-{% for interface in network_interfaces %}
+{% for interface in network_interfaces_ifaces %}
 
 # {{ interface.comment }}
 auto {{ interface.interface }}

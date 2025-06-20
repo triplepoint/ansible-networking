@@ -7,23 +7,24 @@
 - name: Write the key pair to files, if they're defined
   when: item.public_key is defined and item.private_key is defined
   block:
-  - name: Write the public key to a key file, if keys are defined
-    ansible.builtin.copy:
-      content: "{{ item.public_key }}"
-      dest: "{{ wireguard_path }}/{{ item.name }}_publickey"
-      mode: "0644"
-    notify: Restart wireguard
+    - name: Write the public key to a key file, if keys are defined
+      ansible.builtin.copy:
+        content: "{{ item.public_key }}"
+        dest: "{{ wireguard_path }}/{{ item.name }}_publickey"
+        mode: "0644"
+      notify: Restart wireguard
 
-  - name: Write the private key to a key file, if keys are defined
-    ansible.builtin.copy:
-      content: "{{ item.private_key }}"
-      dest: "{{ wireguard_path }}/{{ item.name }}_privatekey"
-      mode: "0644"
-    notify: Restart wireguard
-    no_log: true
+    - name: Write the private key to a key file, if keys are defined
+      ansible.builtin.copy:
+        content: "{{ item.private_key }}"
+        dest: "{{ wireguard_path }}/{{ item.name }}_privatekey"
+        mode: "0644"
+      notify: Restart wireguard
+      no_log: true
 
 - name: Generate public and private keys for this Wireguard interface, if they do not yet exist
-  ansible.builtin.shell: "set -o pipefail && umask 077; set -o pipefail && wg genkey | tee {{ item.name }}_privatekey | wg pubkey > {{ item.name }}_publickey"  # noqa 204
+  ansible.builtin.shell: |
+    set -o pipefail && umask 077; set -o pipefail && wg genkey | tee {{ item.name }}_privatekey | wg pubkey > {{ item.name }}_publickey
   args:
     executable: /bin/bash
     creates: "{{ wireguard_path }}/{{ item.name }}_privatekey"
