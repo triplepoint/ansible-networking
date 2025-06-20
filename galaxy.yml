@@ -16,8 +16,7 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Jonathan Hanson <jonathan@jonathan.hanson.org>
-
+    - Jonathan Hanson <jonathan@jonathan.hanson.org>
 
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
@@ -38,7 +37,8 @@ tags:
 # L(specifiers,https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification). Multiple version
 # range specifiers can be set and are separated by ','
 dependencies:
-    community.general: '>=1.0.0'
+    community.general: ">=1.0.0"
+    ansible.posix: ">=1.0.0"
 
 # The URL of the originating SCM repository
 repository: https://github.com/triplepoint/ansible-networking
@@ -57,10 +57,10 @@ issues: https://github.com/triplepoint/ansible-networking/issues
 # uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
 # and '.git' are always filtered
 build_ignore:
-  - .config
-  - .github
-  - .gitignore
-  - CHANGELOG.md
-  - roles/*/molecule
-  - tests
-  - '*.tar.gz'
+    - .config
+    - .github
+    - .gitignore
+    - CHANGELOG.md
+    - roles/*/molecule
+    - tests
+    - "*.tar.gz"
