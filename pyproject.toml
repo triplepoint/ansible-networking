@@ -1,10 +1,7 @@
-[tool.poetry]
-package-mode = false
+[project]
+name = "networking"
+version = "0.0.1"
+requires-python = ">=3.12"
 
-[tool.poetry.dependencies]
-python = "^3.12"
-molecule = {extras = ["docker", "lint", "test"], version = "^25.6.0"}
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+dev = ["molecule[docker,lint,test]>=25.6.0"]
