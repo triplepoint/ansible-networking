@@ -54,9 +54,12 @@ slaac private
 noipv6rs
 
 # Only allow onthe WAN interface
-allowinterfaces enp4s0
+allowinterfaces {{ network_interfaces_dhcpcd_wan_interface }}
 
-interface enp4s0
+interface {{ network_interfaces_dhcpcd_wan_interface }}
   ipv6rs                 # enable routing solicitation for WAN adapter
   ia_na 1                # request an IPv6 address
-  ia_pd 2 enp1s0/0/64 enp1s0.2/1/64 wg0/2/64      # request a PD and assign it to the private LAN, guest network, and wireguard network
+{# NOTE: changing this file restarts networking on deploy, so keep the rendered output stable. #}
+{% if network_interfaces_dhcpcd_ia_pd_assignments | length > 0 %}
+  ia_pd 2{{ '/::/' ~ network_interfaces_dhcpcd_ia_pd_prefix_length if network_interfaces_dhcpcd_ia_pd_prefix_length else '' }}{% for a in network_interfaces_dhcpcd_ia_pd_assignments %} {{ a.interface }}/{{ a.sla_id }}/64{% endfor %}      # request a PD and assign it to the private LAN, guest network, and wireguard network
+{% endif %}

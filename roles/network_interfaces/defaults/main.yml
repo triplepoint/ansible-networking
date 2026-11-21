@@ -24,3 +24,21 @@ network_interfaces_ifaces: []
 # will be set on all interface defined in network_interfaces_ifaces.
 # 1000 was the default value on a stock Ubuntu Xenial install.
 network_interfaces_txqueue_length: 1000
+
+# dhcpcd manages only the WAN interface.  It requests an IPv4 lease, an IPv6
+# address, and (when assignments are given) an IPv6 delegated prefix.
+network_interfaces_dhcpcd_wan_interface: "eth0"
+
+# Interfaces that each get a /64 carved out of the delegated prefix.  sla_id
+# picks which /64 (0 is the first), so keep it stable for each interface or its
+# prefix will change.  The delegated prefix must be big enough for every sla_id:
+# a /64 only covers sla_id 0, a /60 covers 0-15.
+network_interfaces_dhcpcd_ia_pd_assignments: []
+  # - interface: eth1
+  #   sla_id: 0
+  # - interface: eth1.2
+  #   sla_id: 1
+
+# Prefix length to ask the ISP to delegate, e.g. 60.  Empty means take whatever
+# the ISP gives by default (often only a /64).
+network_interfaces_dhcpcd_ia_pd_prefix_length: ""
