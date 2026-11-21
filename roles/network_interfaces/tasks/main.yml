@@ -1,4 +1,13 @@
 ---
+- name: Ensure the dhcpcd WAN interface is set
+  ansible.builtin.assert:
+    that:
+      - network_interfaces_dhcpcd_wan_interface | length > 0
+    fail_msg: >-
+      network_interfaces_dhcpcd_wan_interface must be set to the WAN interface
+      (and network_interfaces_dhcpcd_ia_pd_assignments to the prefix-delegation
+      interfaces, if any).  Refusing to write a dhcpcd.conf that would break the WAN.
+
 - name: Ensure VLAN package is present
   ansible.builtin.package:
     name: vlan
