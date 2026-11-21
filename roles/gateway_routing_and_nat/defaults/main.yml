@@ -3,6 +3,11 @@
 # This gets used to define NAT and "outbound traffic" orientation.
 gateway_routing_and_nat_wan_interface: "eth0"
 
+# The template used to render /etc/nftables.conf.  The default is the ruleset
+# shipped with this role.  Set this to a path (absolute, or relative to the
+# playbook's templates search path) to supply a site-specific ruleset instead.
+gateway_routing_and_nat_nftables_template: "nftables_config.j2"
+
 # The local subnets within the local network.
 # This is a list of objects that define for which ports and protocols the
 # gateway should accept inbound traffic

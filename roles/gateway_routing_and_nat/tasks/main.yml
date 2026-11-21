@@ -12,9 +12,10 @@
 
 - name: Ensure the nftables configuration file is in place
   ansible.builtin.template:
-    src: nftables_config.j2
+    src: "{{ gateway_routing_and_nat_nftables_template }}"
     dest: /etc/nftables.conf
     mode: "0644"
+    validate: nft --check --file %s
   notify: Reload nftables
 
 - name: Ensure that nftables is started and enabled
