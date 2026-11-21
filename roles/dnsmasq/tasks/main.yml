@@ -19,12 +19,32 @@
     line: "DNSStubListener=no"
   notify: Restart resolved
 
-- name: Ensure dnsmasq starts before systemd-resolved
+# An earlier version of this role added this line to the packaged unit file
+# (through the multi-user.target.wants symlink).  `insertafter: "[Unit]"` is a
+# regex character class, so the line landed in [Install], where systemd ignores
+# it with a warning; package upgrades also overwrote it.  Remove any leftover.
+- name: Ensure the old Before= line is gone from the packaged dnsmasq unit
   ansible.builtin.lineinfile:
-    path: /etc/systemd/system/multi-user.target.wants/dnsmasq.service
-    insertafter: "[Unit]"
-    regexp: "^Before=systemd-resolved.service"
-    line: "Before=systemd-resolved.service"
+    path: /usr/lib/systemd/system/dnsmasq.service
+    regexp: "^Before=systemd-resolved.service$"
+    state: absent
+  notify:
+    - Reload systemd
+
+- name: Ensure the dnsmasq unit drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/dnsmasq.service.d
+    state: directory
+    mode: "0755"
+
+- name: Ensure dnsmasq starts before systemd-resolved
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dnsmasq.service.d/10-before-resolved.conf
+    content: |
+      # Managed by Ansible (triplepoint.networking.dnsmasq)
+      [Unit]
+      Before=systemd-resolved.service
+    mode: "0644"
   notify:
     - Reload systemd
     - Restart resolved
