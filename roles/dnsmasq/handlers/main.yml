@@ -1,4 +1,10 @@
 ---
+# Handlers run in the order they are defined here, so reload systemd first:
+# the restarts below must see any changed unit files.
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
 - name: Restart dnsmasq
   ansible.builtin.service:
     name: dnsmasq
@@ -8,7 +14,3 @@
   ansible.builtin.service:
     name: systemd-resolved
     state: restarted
-
-- name: Reload systemd
-  ansible.builtin.systemd_service:
-    daemon_reload: true
