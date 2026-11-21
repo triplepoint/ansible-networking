@@ -1,7 +1,8 @@
 #!/usr/sbin/nft -f
 
 ## Note: this file is handwritten to match what I want in my network JMH 2025.04.19
-## TODO: factor this out into a template that applies the configuration in gateway_routing_and_nat_subnets
+## Interface names and rules are hard-coded; supply a site-specific ruleset with
+## gateway_routing_and_nat_nftables_template instead of editing this file.
 
 flush ruleset
 
