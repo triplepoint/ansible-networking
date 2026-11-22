@@ -19,10 +19,14 @@
     line: "DNSStubListener=no"
   notify: Restart resolved
 
-# An earlier version of this role added this line to the packaged unit file
-# (through the multi-user.target.wants symlink).  `insertafter: "[Unit]"` is a
-# regex character class, so the line landed in [Install], where systemd ignores
-# it with a warning; package upgrades also overwrote it.  Remove any leftover.
+# Earlier versions of this role ordered dnsmasq before systemd-resolved, first
+# with a line added to the packaged unit file (which landed in [Install], where
+# systemd ignored it) and then with a drop-in.  The ordering isn't needed, since
+# DNSStubListener=no above already keeps resolved off port 53, and it's harmful:
+# resolved is ordered before network.target and dnsmasq after it, so the drop-in
+# created an ordering cycle that delayed resolved at boot.  Without resolved,
+# /run/systemd/resolve/stub-resolv.conf (the target of /etc/resolv.conf) didn't
+# exist yet, and dhcpcd.service failed to start.  Remove both leftovers.
 - name: Ensure the old Before= line is gone from the packaged dnsmasq unit
   ansible.builtin.lineinfile:
     path: /usr/lib/systemd/system/dnsmasq.service
@@ -31,24 +35,12 @@
   notify:
     - Reload systemd
 
-- name: Ensure the dnsmasq unit drop-in directory exists
+- name: Ensure the dnsmasq-before-resolved drop-in is gone
   ansible.builtin.file:
-    path: /etc/systemd/system/dnsmasq.service.d
-    state: directory
-    mode: "0755"
-
-- name: Ensure dnsmasq starts before systemd-resolved
-  ansible.builtin.copy:
-    dest: /etc/systemd/system/dnsmasq.service.d/10-before-resolved.conf
-    content: |
-      # Managed by Ansible (triplepoint.networking.dnsmasq)
-      [Unit]
-      Before=systemd-resolved.service
-    mode: "0644"
+    path: /etc/systemd/system/dnsmasq.service.d/10-before-resolved.conf
+    state: absent
   notify:
     - Reload systemd
-    - Restart resolved
-    - Restart dnsmasq
 
 - name: Ensure Dnsmasq changes take effect before we go on
   ansible.builtin.meta: flush_handlers
